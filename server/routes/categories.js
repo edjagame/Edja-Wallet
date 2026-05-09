@@ -2,8 +2,16 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authMiddleware');
 
-router.get('/', auth, (req, res) => {
-  res.json({ message: 'categories route working', user: req.user });
+const pool = require('../db');
+
+router.get('/', auth, async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM categories WHERE user_id = $1", [req.user.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
 });
 
 module.exports = router;

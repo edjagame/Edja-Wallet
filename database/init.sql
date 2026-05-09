@@ -38,4 +38,12 @@ CREATE TABLE IF NOT EXISTS budgets (
 CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions (user_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions (date);
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories (user_id);
-CREATE INDEX IF NOT EXISTS idx_budgets_user_id_month ON budgets (user_id, month);
+-- Starter Categories for User ID 1 --
+INSERT INTO categories (user_id, name, type, icon) VALUES
+(1, 'Food & Drinks', 'expense', '🍔'),
+(1, 'Transportation', 'expense', '🚗'),
+(1, 'Rent/Housing', 'expense', '🏠'),
+(1, 'Entertainment', 'expense', '🎬'),
+(1, 'Salary', 'income', '💰'),
+(1, 'Gifts', 'income', '🎁')
+ON CONFLICT (user_id, name) DO NOTHING;
