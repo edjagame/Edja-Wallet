@@ -7,12 +7,13 @@ import axios from '../api/axios';
  * Provides a form for users to add new financial transactions.
  * Fetches dynamic categories from the backend and handles form submission.
  */
-function TransactionForm() {
+function TransactionForm({ onTransactionAdded }) {
   // --- State Management ---
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // --- Effects ---
   // Fetches the list of available categories from the database on component mount
@@ -34,19 +35,28 @@ function TransactionForm() {
 
     // Basic validation to ensure a category is selected
     if (!categoryId) {
-      alert("Please select a category!");
+      // Could also use a state for error messages here if you want!
+      console.warn("Please select a category!");
       return;
     }
 
     try {
       // Send transaction data to the backend
-      await axios.post('/transactions', { amount, description, categoryId });
+      const res = await axios.post('/transactions', { amount, description, categoryId });
       
       // Reset form state on successful submission
       setDescription('');
       setAmount('');
       setCategoryId('');
-      alert("Transaction added!");
+      
+      // Show success message and clear it after 3 seconds
+      setSuccessMessage('Transaction added successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+
+      // Call the parent component's function to update the list immediately
+      if (onTransactionAdded) {
+        onTransactionAdded(res.data);
+      }
     } catch (err) {
       console.error("Failed to add transaction:", err);
     }
@@ -56,6 +66,7 @@ function TransactionForm() {
   return (
     <div className="transaction-form">
       <h3>Add New Transaction</h3>
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       <form onSubmit={handleSubmit}>
         {/* Description Input */}
         <input
