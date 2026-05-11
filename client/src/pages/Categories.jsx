@@ -61,11 +61,11 @@ function Categories() {
       <CategoryForm onCategoryAdded={fetchCategories} />
 
       {/* Global Actions Bar */}
-      <div style={{ marginBottom: '20px' }}>
+      <div className="mb-20">
         <button 
           onClick={handleDelete} 
           disabled={!selectedCategoryId}
-          style={{ backgroundColor: selectedCategoryId ? '#dc3545' : '#ccc', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: selectedCategoryId ? 'pointer' : 'not-allowed' }}
+          className="btn-danger"
         >
           Delete Selected
         </button>

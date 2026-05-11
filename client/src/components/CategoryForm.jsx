@@ -34,16 +34,16 @@ function CategoryForm({ onCategoryAdded }) {
 
   // --- Rendering ---
   return (
-    <form onSubmit={handleAddCategory} style={{ marginBottom: '20px' }}>
+    <form onSubmit={handleAddCategory} className="mb-20">
       <input
         type="text"
         placeholder="Category Name"
         value={name}
         onChange={e => setName(e.target.value)}
         required
-        style={{ marginRight: '10px' }}
+        className="mr-10"
       />
-      <select value={type} onChange={e => setType(e.target.value)} style={{ marginRight: '10px' }}>
+      <select value={type} onChange={e => setType(e.target.value)} className="mr-10">
         <option value="expense">Expense</option>
         <option value="income">Income</option>
       </select>
@@ -52,7 +52,7 @@ function CategoryForm({ onCategoryAdded }) {
         placeholder="Icon (e.g. 🍔)"
         value={icon}
         onChange={e => setIcon(e.target.value)}
-        style={{ marginRight: '10px' }}
+        className="mr-10"
       />
       <button type="submit">Add Category</button>
     </form>

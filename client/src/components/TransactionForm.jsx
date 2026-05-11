@@ -66,7 +66,7 @@ function TransactionForm({ onTransactionAdded }) {
   return (
     <div className="transaction-form">
       <h3>Add New Transaction</h3>
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      {successMessage && <p className="text-success">{successMessage}</p>}
       <form onSubmit={handleSubmit}>
         {/* Description Input */}
         <input

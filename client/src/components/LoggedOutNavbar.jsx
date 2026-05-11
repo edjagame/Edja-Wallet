@@ -22,7 +22,7 @@ function LoggedOutNavbar() {
       <h2 className="navbar-title">Edja Wallet</h2>
       <ul className="navbar-list">  
         <li><button onClick={handleLoginClick} className="nav-button">Login</button></li>
-        <li><button onClick={handleRegisterClick} className="nav-button">Register</button></li>
+        <li><button onClick={handleRegisterClick} className="nav-button primary-action">Register</button></li>
       </ul>
     </nav>
   );

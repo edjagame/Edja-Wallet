@@ -43,7 +43,7 @@ function Login() {
     return (
         <div>
             <h1>Login</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="text-danger">{error}</p>}
             <form onSubmit={handleLogin}>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required />

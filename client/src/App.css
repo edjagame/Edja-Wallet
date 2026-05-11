@@ -1,38 +1,153 @@
+/* Main Layout */
 .App {
-  text-align: center;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Card Styling */
+.card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  padding: 24px;
+  margin-bottom: 24px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Primary Button Styling */
+button, .btn-primary {
+  background-color: #2DD4BF;
+  color: #111827;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+button:hover, .btn-primary:hover {
+  opacity: 0.9;
 }
 
-.App-link {
-  color: #61dafb;
+/* Amount Displays */
+.amount {
+  font-family: 'DM Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Table overrides for Transactions */
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
+
+th {
+  text-align: left;
+  border-bottom: 2px solid #E5E7EB;
+  color: #6B7280;
+  font-weight: 500;
+  padding: 12px;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+/* Forms & Inputs */
+input, select {
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+/* Margin and Padding Utilities */
+.mb-10 { margin-bottom: 10px; }
+.mb-20 { margin-bottom: 20px; }
+.mr-10 { margin-right: 10px; }
+.mt-0 { margin-top: 0; }
+.my-32 { margin: 32px 0; }
+.gap-10 { gap: 10px; }
+.gap-6 { gap: 6px; }
+
+/* Flex & Grid */
+.d-flex { display: flex; }
+.grid-col-1 { display: grid; grid-template-columns: 1fr; }
+
+/* Colors */
+.text-danger { color: #EF4444; }
+.text-success { color: #22C55E; }
+
+/* Buttons */
+.btn-danger {
+  background-color: #EF4444;
+  color: #FFFFFF;
+}
+.btn-danger:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Category Grid Item */
+.category-item {
+  border: 1px solid #E5E7EB;
+  padding: 12px;
+  border-radius: 8px; /* Brand Guide says 8px for Cards/Panels */
+  cursor: pointer;
+  background-color: #FFFFFF;
+  transition: background-color 0.2s;
+}
+.category-item.selected {
+  background-color: #F9FAFB; /* Off-white for selection or #E5E7EB */
+  border-color: #2DD4BF;
+}
+
+/* Table Utilities */
+.w-90 { width: 90px; }
+.w-100p { width: 100%; }
+.nowrap { white-space: nowrap; }
+.p-4 { padding: 4px; }
+.p-10 { padding: 10px; }
+
+/* Transaction Row states */
+.tr-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+.tr-row:hover {
+  background-color: #F9FAFB;
+}
+.tr-row.selected {
+  background-color: #F3F4F6;
+}
+.tr-row.editing {
+  background-color: #FFFFFF;
+  cursor: default;
+}
+
+/* Edit actions */
+.btn-icon-success {
+  background-color: #22C55E;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn-icon-cancel {
+  background-color: #6B7280;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+

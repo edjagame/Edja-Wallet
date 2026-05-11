@@ -11,10 +11,12 @@ function Dashboard() {
   }
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome back, {user.name || 'User'}!</p>
-      <button onClick={logout}>Log Out</button>
+    <div className="App">
+      <div className="card">
+        <h1>Dashboard</h1>
+        <p>Welcome back, {user.name || 'User'}!</p>
+        <button onClick={logout}>Log Out</button>
+      </div>
     </div>
   );
 }

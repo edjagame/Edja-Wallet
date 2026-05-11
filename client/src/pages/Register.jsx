@@ -44,7 +44,7 @@ function Register() {
     return (
         <div>
             <h1>Register</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="text-danger">{error}</p>}
             <form onSubmit={handleRegister}>
             <input type="name" value={name} onChange={e => setName(e.target.value)} placeholder="Name" required />
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
