@@ -27,7 +27,10 @@ function LoggedInNavbar() {
 
   return (
     <nav className="navbar">
-      <h2 className="navbar-title">Edja Wallet</h2>
+      <div className="navbar-brand">
+        <img src={`${process.env.PUBLIC_URL}/edja-wallet-icon.svg`} alt="Edja Wallet Logo" className="navbar-logo" />
+        <h2 className="navbar-title">Edja Wallet</h2>
+      </div>
       <ul className="navbar-list">
         <li><button onClick={handleDashboardClick} className="nav-button">Dashboard</button></li>
         <li><button onClick={handleTransactionsClick} className="nav-button">Transactions</button></li>

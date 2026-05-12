@@ -19,7 +19,10 @@ function LoggedOutNavbar() {
 
   return (
     <nav className="navbar">
-      <h2 className="navbar-title">Edja Wallet</h2>
+      <div className="navbar-brand">
+        <img src={`${process.env.PUBLIC_URL}/edja-wallet-icon.svg`} alt="Edja Wallet Logo" className="navbar-logo" />
+        <h2 className="navbar-title">Edja Wallet</h2>
+      </div>
       <ul className="navbar-list">  
         <li><button onClick={handleLoginClick} className="nav-button">Login</button></li>
         <li><button onClick={handleRegisterClick} className="nav-button primary-action">Register</button></li>

@@ -163,9 +163,12 @@ function TransactionList({
                         onChange={(e) => updateDraft('amount', e.target.value)}
                         onClick={(e) => e.stopPropagation()}
                         className="w-100p p-4"
+                        min="0"
                       />
                     ) : (
-                      `$${Number(t.amount).toFixed(2)}`
+                      <span title={t.category_type === 'income' ? 'Income' : 'Expense'}>
+                        {t.category_type === 'income' ? '+' : '−'} {Number(t.amount).toFixed(2)}
+                      </span>
                     )}
                   </td>
 

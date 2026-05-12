@@ -83,6 +83,8 @@ function TransactionForm({ onTransactionAdded }) {
           placeholder="Amount"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          min="0"
+          step="0.01"
           required
         />
 

@@ -11,7 +11,7 @@ router.get('/', auth, async (req, res) => {
     // If a search term exists, filter by description (case-insensitive)
     if (search) {
       const result = await pool.query(
-        `SELECT t.*, c.name AS category_name, c.icon AS category_icon 
+        `SELECT t.*, c.name AS category_name, c.icon AS category_icon, c.type AS category_type 
          FROM transactions t
          LEFT JOIN categories c ON t.category_id = c.id
          WHERE t.user_id = $1 AND t.description ILIKE $2
@@ -23,7 +23,7 @@ router.get('/', auth, async (req, res) => {
 
     // If no search term, return all transactions for the user
     const result = await pool.query(
-      `SELECT t.*, c.name AS category_name, c.icon AS category_icon 
+      `SELECT t.*, c.name AS category_name, c.icon AS category_icon, c.type AS category_type 
        FROM transactions t
        LEFT JOIN categories c ON t.category_id = c.id
        WHERE t.user_id = $1
