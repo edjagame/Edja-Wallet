@@ -37,6 +37,10 @@ function LoggedInNavbar() {
     navigate('/budgets');
   }
 
+  const handleSettingsClick = () => {
+    navigate('/settings');
+  }
+
   return (
     <nav className="navbar">
       <div className="navbar-brand">
@@ -48,6 +52,7 @@ function LoggedInNavbar() {
         <li><button onClick={handleTransactionsClick} className="nav-button">Transactions</button></li>
         <li><button onClick={handleBudgetsClick} className="nav-button">Budgets</button></li>
         <li><button onClick={handleCategoriesClick} className="nav-button">Categories</button></li>
+        <li><button onClick={handleSettingsClick} className="nav-button">Settings</button></li>
         {/* Personalized greeting using user state */}
         <li><span className="user-greeting">Hello, {user.name}!</span></li>
         <li><button onClick={handleLogout} className="nav-button-logout">Logout</button></li>

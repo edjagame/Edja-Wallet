@@ -25,6 +25,41 @@ router.post('/', auth, async (req, res) => {
     );
     res.json(newCategory.rows[0]);
   } catch (err) {
+    if (err.code === '23505') {
+       return res.status(400).json({ message: "A category with this name and type already exists." });
+    }
+    res.status(500).send("Server Error");
+    console.error(err);
+  }
+});
+
+// Restore default categories
+router.post('/restore-defaults', auth, async (req, res) => {
+  try {
+    const defaultCategories = [
+      ['Food & Drinks', 'expense', '🍔'],
+      ['Transportation', 'expense', '🚗'],
+      ['Rent/Housing', 'expense', '🏠'],
+      ['Entertainment', 'expense', '🎬'],
+      ['Salary', 'income', '💰'],
+      ['Gifts', 'income', '🎁'],
+      ['Other', 'expense', '📦'],
+      ['Other', 'income', '📦']
+    ];
+
+    let insertedCount = 0;
+
+    for (const [catName, type, icon] of defaultCategories) {
+      const result = await pool.query(
+        "INSERT INTO categories (user_id, name, type, icon) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING RETURNING id",
+        [req.user.id, catName, type, icon]
+      );
+      if (result.rows.length > 0) {
+        insertedCount++;
+      }
+    }
+    res.json({ message: `Successfully restored ${insertedCount} default categories.` });
+  } catch (err) {
     res.status(500).send("Server Error");
     console.error(err);
   }
@@ -33,6 +68,21 @@ router.post('/', auth, async (req, res) => {
 router.delete('/:id', auth, async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Check if the category to be deleted is named 'Other'
+    const categoryCheck = await pool.query(
+      "SELECT name FROM categories WHERE id = $1 AND user_id = $2",
+      [id, req.user.id]
+    );
+
+    if (categoryCheck.rows.length === 0) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    if (categoryCheck.rows[0].name.toLowerCase() === 'other') {
+      return res.status(403).json({ message: "Cannot delete the default 'Other' category" });
+    }
+
     const deleteCategory = await pool.query(`
       DELETE FROM categories
       WHERE user_id = $1

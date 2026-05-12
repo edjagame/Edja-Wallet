@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import axios from '../api/axios';
 import BudgetChart from '../components/BudgetChart';
+import TransactionForm from '../components/TransactionForm';
 
 /**
  * Dashboard Page
@@ -64,6 +65,13 @@ function Dashboard() {
 
         {/* Visual breakdown of budgets */}
         <BudgetChart budgets = {budgets}/>
+
+        <hr style={{ margin: '30px 0' }} />
+
+        {/* Quick Transaction Entry */}
+        <div style={{ marginBottom: '30px' }}>
+          <TransactionForm onTransactionAdded={fetchBudgets} />
+        </div>
         
         <button onClick={logout}>Log Out</button>
       </div>

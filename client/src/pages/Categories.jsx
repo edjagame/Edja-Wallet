@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from '../api/axios';
 import CategoryForm from '../components/CategoryForm';
 import CategoryList from '../components/CategoryList';
+import Modal from '../components/Modal';
 
 /**
  * Categories Page
@@ -14,6 +15,7 @@ function Categories() {
   // --- State Management ---
   const [categories, setCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // --- Data Fetching ---
   const fetchCategories = async () => {
@@ -31,28 +33,46 @@ function Categories() {
   }, []);
 
   // --- Event Handlers ---
+  const handleCategoryAdded = (newCategory) => {
+    setCategories([...categories, newCategory]);
+  };
+
+  const confirmDeleteCategory = () => {
+    if (!selectedCategoryId) return;
+    setIsDeleteModalOpen(true);
+  };
+
   const handleDeleteCategory = async () => {
     if (!selectedCategoryId) return;
-    const isConfirmed = window.confirm("Are you sure you want to delete this category?");
-    if (!isConfirmed) return;
 
     try {
       await axios.delete(`/categories/${selectedCategoryId}`);
       setCategories(categories.filter(c => c.id !== selectedCategoryId));
       setSelectedCategoryId(null);
+      setIsDeleteModalOpen(false);
     } catch (err) {
       console.error("Failed to delete category:", err);
+      // Even if there is an error, close the modal so they are not stuck
+      setIsDeleteModalOpen(false);
     }
   };
 
   // --- Rendering ---
+  const selectedCategory = categories.find(c => c.id === selectedCategoryId);
+  const isOtherSelected = selectedCategory && selectedCategory.name.toLowerCase() === 'other';
+
   return (
     <div className="categories-page">
       <section className="mb-40">
         <h1>Categories</h1>
-        <CategoryForm />
+        <CategoryForm onCategoryAdded={handleCategoryAdded} />
         <div className="mb-20">
-          <button onClick={handleDeleteCategory} disabled={!selectedCategoryId} className="btn-danger">
+          <button 
+            onClick={confirmDeleteCategory} 
+            disabled={!selectedCategoryId || isOtherSelected} 
+            className="btn-danger"
+            title={isOtherSelected ? "The 'Other' category cannot be deleted" : ""}
+          >
             Delete Selected Category
           </button>
         </div>
@@ -62,6 +82,18 @@ function Categories() {
           onSelectCategory={setSelectedCategoryId} 
         />
       </section>
+
+      <Modal 
+        isOpen={isDeleteModalOpen} 
+        onClose={() => setIsDeleteModalOpen(false)} 
+        title="Confirm Deletion"
+      >
+        <p>Are you sure you want to delete this category? Proceeding will not delete previous transactions under this category but will leave them uncategorized.</p>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+            <button className="btn-danger" onClick={handleDeleteCategory}>Delete Category</button>
+            <button onClick={() => setIsDeleteModalOpen(false)}>Cancel</button>
+        </div>
+      </Modal>
     </div>
   );
 }

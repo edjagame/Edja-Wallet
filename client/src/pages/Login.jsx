@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 
@@ -15,7 +15,12 @@ function Login() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
+    const { user, login } = useContext(AuthContext);
+
+    // Auth Guard: Redirect authenticated users to dashboard
+    if (user) {
+        return <Navigate to="/" />;
+    }
 
     // --- Event Handlers ---
     // Submits credentials to the backend for verification

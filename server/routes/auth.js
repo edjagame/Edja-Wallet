@@ -30,7 +30,28 @@ router.post('/register', async (req, res) => {
         [name, email, bcryptPassword]
     );
 
-    const token = jwt.sign({ user: { id: newUser.rows[0].id } }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const userId = newUser.rows[0].id;
+
+    // Create default categories for the new user
+    const defaultCategories = [
+        ['Food & Drinks', 'expense', '🍔'],
+        ['Transportation', 'expense', '🚗'],
+        ['Rent/Housing', 'expense', '🏠'],
+        ['Entertainment', 'expense', '🎬'],
+        ['Salary', 'income', '💰'],
+        ['Gifts', 'income', '🎁'],
+        ['Other', 'expense', '📦'],
+        ['Other', 'income', '📦']
+    ];
+
+    for (const [catName, type, icon] of defaultCategories) {
+        await pool.query(
+            "INSERT INTO categories (user_id, name, type, icon) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING",
+            [userId, catName, type, icon]
+        );
+    }
+
+    const token = jwt.sign({ user: { id: userId } }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     res.json({ 
         token, 

@@ -9,6 +9,7 @@ import axios from '../api/axios';
  */
 function TransactionForm({ onTransactionAdded }) {
   // --- State Management ---
+  const [transactionType, setTransactionType] = useState('expense');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -28,6 +29,18 @@ function TransactionForm({ onTransactionAdded }) {
     };
     fetchCategories();
   }, []);
+
+  // Update categoryId when transactionType or categories change
+  useEffect(() => {
+    const defaultOther = categories.find(
+      cat => cat.name.toLowerCase() === 'other' && cat.type === transactionType
+    );
+    if (defaultOther) {
+      setCategoryId(defaultOther.id);
+    } else {
+      setCategoryId('');
+    }
+  }, [transactionType, categories]);
 
   // --- Event Handlers ---
   const handleSubmit = async (e) => {
@@ -62,10 +75,39 @@ function TransactionForm({ onTransactionAdded }) {
     }
   };
 
+  // Filter categories down to only the currently selected type
+  const filteredCategories = categories.filter(c => c.type === transactionType);
+
   // --- Rendering ---
   return (
     <div className="transaction-form">
-      <h3>Add New Transaction</h3>
+      <h3>Add New {transactionType === 'expense' ? 'Expense' : 'Income'}</h3>
+      
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+        <button 
+          type="button" 
+          onClick={() => setTransactionType('expense')}
+          style={{ 
+            flex: 1, 
+            backgroundColor: transactionType === 'expense' ? '#3B82F6' : '#e5e7eb',
+            color: transactionType === 'expense' ? 'white' : 'black'
+          }}
+        >
+          Expense
+        </button>
+        <button 
+          type="button" 
+          onClick={() => setTransactionType('income')}
+          style={{ 
+            flex: 1, 
+            backgroundColor: transactionType === 'income' ? '#10B981' : '#e5e7eb',
+            color: transactionType === 'income' ? 'white' : 'black'
+          }}
+        >
+          Income
+        </button>
+      </div>
+
       {successMessage && <p className="text-success">{successMessage}</p>}
       <form onSubmit={handleSubmit}>
         {/* Description Input */}
@@ -95,14 +137,14 @@ function TransactionForm({ onTransactionAdded }) {
           required
         >
           <option value="">-- Select Category --</option>
-          {categories.map((cat) => (
+          {filteredCategories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.icon} {cat.name}
             </option>
           ))}
         </select>
 
-        <button type="submit">Add Transaction</button>
+        <button type="submit">Add {transactionType === 'expense' ? 'Expense' : 'Income'}</button>
       </form>
     </div>
   );

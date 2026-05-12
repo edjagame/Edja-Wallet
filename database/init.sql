@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS categories (
   name VARCHAR(50) NOT NULL,
   type VARCHAR(10) CHECK (type IN ('income', 'expense')),
   icon VARCHAR(10),
-  UNIQUE (user_id, name)
+  UNIQUE (user_id, name, type)
 );
 
 CREATE TABLE IF NOT EXISTS transactions (
@@ -47,5 +47,7 @@ INSERT INTO categories (user_id, name, type, icon) VALUES
 (1, 'Rent/Housing', 'expense', '🏠'),
 (1, 'Entertainment', 'expense', '🎬'),
 (1, 'Salary', 'income', '💰'),
-(1, 'Gifts', 'income', '🎁')
-ON CONFLICT (user_id, name) DO NOTHING;
+(1, 'Gifts', 'income', '🎁'),
+(1, 'Other', 'expense', '📦'),
+(1, 'Other', 'income', '📦')
+ON CONFLICT (user_id, name, type) DO NOTHING;

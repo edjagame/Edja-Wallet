@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 
@@ -16,7 +16,12 @@ function Register() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
+    const { user, login } = useContext(AuthContext);
+
+    // Auth Guard: Redirect authenticated users to dashboard
+    if (user) {
+        return <Navigate to="/" />;
+    }
 
     // --- Event Handlers ---
     // Submits new account details to the server
