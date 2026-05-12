@@ -5,22 +5,30 @@
   margin: 0 auto;
 }
 
+/* Page Headings */
+h1, .page-heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
 /* Card Styling */
 .card {
-  background-color: #FFFFFF;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
   padding: 24px;
   margin-bottom: 24px;
+  color: var(--color-text);
 }
 
 /* Primary Button Styling */
 button, .btn-primary {
-  background-color: #2DD4BF;
-  color: #111827;
+  background-color: var(--color-accent);
+  color: #111827; /* Near-black for contrast */
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   padding: 8px 16px;
   font-weight: 600;
   cursor: pointer;
@@ -33,9 +41,9 @@ button:hover, .btn-primary:hover {
 
 /* Amount Displays */
 .amount {
-  font-family: 'DM Mono', monospace;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* Table overrides for Transactions */
@@ -46,65 +54,76 @@ table {
 
 th {
   text-align: left;
-  border-bottom: 2px solid #E5E7EB;
-  color: #6B7280;
-  font-weight: 500;
+  border-bottom: 2px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
   padding: 12px;
 }
 
 td {
   padding: 12px;
-  border-bottom: 1px solid #F3F4F6;
+  border-bottom: 1px solid var(--color-border);
 }
 
 /* Forms & Inputs */
 input, select {
-  border: 1px solid #E5E7EB;
-  border-radius: 6px;
-  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  padding: 12px; /* space-3 from brand guide */
   font-family: inherit;
   font-size: 1rem;
 }
 
 /* Margin and Padding Utilities */
-.mb-10 { margin-bottom: 10px; }
-.mb-20 { margin-bottom: 20px; }
-.mr-10 { margin-right: 10px; }
+.mb-10 { margin-bottom: 4px; } /* Updated to brand units as approximations */
+.mb-20 { margin-bottom: 12px; }
+.mb-40 { margin-bottom: 24px; }
+.mr-10 { margin-right: 8px; }
 .mt-0 { margin-top: 0; }
 .my-32 { margin: 32px 0; }
-.gap-10 { gap: 10px; }
-.gap-6 { gap: 6px; }
+.gap-10 { gap: 12px; }
+.gap-6 { gap: 8px; }
 
 /* Flex & Grid */
 .d-flex { display: flex; }
 .grid-col-1 { display: grid; grid-template-columns: 1fr; }
 
 /* Colors */
-.text-danger { color: #EF4444; }
-.text-success { color: #22C55E; }
+.text-danger { color: var(--color-danger); }
+.text-success { color: var(--color-success); }
 
 /* Buttons */
 .btn-danger {
-  background-color: #EF4444;
+  background-color: transparent;
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+.btn-danger:hover {
+  background-color: var(--color-danger);
   color: #FFFFFF;
 }
 .btn-danger:disabled {
-  background-color: #ccc;
+  background-color: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
 /* Category & Budget Grid Item */
 .category-item, .budget-item {
-  border: 1px solid #E5E7EB;
+  border: 1px solid var(--color-border);
   padding: 12px;
-  border-radius: 8px; /* Brand Guide says 8px for Cards/Panels */
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  background-color: #FFFFFF;
+  background-color: var(--color-surface);
   transition: background-color 0.2s;
 }
 .category-item.selected, .budget-item.selected {
-  background-color: #F9FAFB; /* Off-white for selection or #E5E7EB */
-  border-color: #2DD4BF;
+  background-color: var(--color-surface-alt);
+  border-color: var(--color-accent);
 }
 
 /* Table Utilities */
@@ -112,7 +131,7 @@ input, select {
 .w-100p { width: 100%; }
 .nowrap { white-space: nowrap; }
 .p-4 { padding: 4px; }
-.p-10 { padding: 10px; }
+.p-10 { padding: 12px; }
 
 /* Transaction Row states */
 .tr-row {
@@ -120,31 +139,31 @@ input, select {
   transition: background-color 0.15s ease-in-out;
 }
 .tr-row:hover {
-  background-color: #F9FAFB;
+  background-color: var(--color-surface-alt);
 }
 .tr-row.selected {
-  background-color: #F3F4F6;
+  background-color: var(--color-surface-alt);
 }
 .tr-row.editing {
-  background-color: #FFFFFF;
+  background-color: var(--color-surface);
   cursor: default;
 }
 
 /* Edit actions */
 .btn-icon-success {
-  background-color: #22C55E;
+  background-color: var(--color-success);
   color: #FFFFFF;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 4px 8px;
   cursor: pointer;
   font-size: 14px;
 }
 .btn-icon-cancel {
-  background-color: #6B7280;
+  background-color: var(--color-text-muted);
   color: #FFFFFF;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 4px 8px;
   cursor: pointer;
   font-size: 14px;

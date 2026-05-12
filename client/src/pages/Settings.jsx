@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
+import { ThemeContext } from '../context/ThemeContext';
 import { Navigate } from 'react-router-dom';
 
 /**
@@ -10,8 +11,12 @@ import { Navigate } from 'react-router-dom';
  */
 function Settings() {
     const { user } = useContext(AuthContext);
+    const { theme, toggleTheme } = useContext(ThemeContext);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     if (!user) {
         return <Navigate to="/login" />;
@@ -27,6 +32,32 @@ function Settings() {
         } catch (err) {
             console.error("Failed to restore default categories:", err);
             setError("Failed to restore categories.");
+        }
+    };
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        setMessage('');
+        setError('');
+
+        if (newPassword !== confirmPassword) {
+            setError("New passwords do not match.");
+            return;
+        }
+
+        try {
+            const res = await axios.post('/auth/change-password', {
+                oldPassword,
+                newPassword
+            });
+            setMessage(res.data.message);
+            setOldPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+            setTimeout(() => setMessage(''), 5000);
+        } catch (err) {
+            console.error("Failed to change password:", err);
+            setError(err.response?.data?.message || "Failed to change password.");
         }
     };
 
@@ -53,19 +84,68 @@ function Settings() {
 
                 <hr style={{ margin: '30px 0' }} />
 
-                <section style={{ marginBottom: '30px', opacity: 0.6 }}>
-                    <h3>Theme Settings (Coming Soon)</h3>
+                <section style={{ marginBottom: '30px' }}>
+                    <h3>Theme Settings</h3>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', marginBottom: '15px' }}>
+                        Customize the appearance of your wallet.
+                    </p>
                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                        <button disabled>Switch to Dark Mode</button>
-                        <button disabled>Switch to Light Mode</button>
+                        <button 
+                            onClick={() => toggleTheme('dark')}
+                            style={{ opacity: theme === 'dark' ? 1 : 0.6 }}
+                            disabled={theme === 'dark'}
+                        >
+                            Switch to Dark Mode
+                        </button>
+                        <button 
+                            onClick={() => toggleTheme('light')}
+                            style={{ opacity: theme === 'light' ? 1 : 0.6 }}
+                            disabled={theme === 'light'}
+                        >
+                            Switch to Light Mode
+                        </button>
                     </div>
                 </section>
 
                 <hr style={{ margin: '30px 0' }} />
 
-                <section style={{ opacity: 0.6 }}>
-                    <h3>Security (Coming Soon)</h3>
-                    <button className="btn-danger" disabled style={{ width: '100%' }}>Change Password</button>
+                <section>
+                    <h3>Security</h3>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', marginBottom: '15px' }}>
+                        Change your account password here.
+                    </p>
+                    <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        <div className="form-group">
+                            <label>Current Password</label>
+                            <input 
+                                type="password" 
+                                value={oldPassword} 
+                                onChange={(e) => setOldPassword(e.target.value)} 
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>New Password</label>
+                            <input 
+                                type="password" 
+                                value={newPassword} 
+                                onChange={(e) => setNewPassword(e.target.value)} 
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Confirm New Password</label>
+                            <input 
+                                type="password" 
+                                value={confirmPassword} 
+                                onChange={(e) => setConfirmPassword(e.target.value)} 
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="btn-danger" style={{ width: '100%' }}>
+                            Change Password
+                        </button>
+                    </form>
                 </section>
             </div>
         </div>

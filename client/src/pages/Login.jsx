@@ -78,6 +78,11 @@ function Login() {
                 />
                 <button type="submit">Login</button>
             </form>
+            <p>
+                <Link to="/forgot-password" style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>
+                    Forgot your password?
+                </Link>
+            </p>
             <p>Don't have an account? <Link to="/register">Register here</Link></p>
         </div>
     );

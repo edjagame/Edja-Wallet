@@ -1,22 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
 :root {
-  --color-primary: #2DD4BF;
-  --color-bg: #F9FAFB;
-  --color-surface: #FFFFFF;
-  --color-text-primary: #111827;
-  --color-text-secondary: #6B7280;
-  --color-danger: #EF4444;
-  --color-success: #22C55E;
+  --color-accent:       #2DD4BF;
+  --color-bg:           #F9FAFB;
+  --color-surface:      #FFFFFF;
+  --color-surface-alt:  #F3F4F6;
+  --color-text:         #111827;
+  --color-text-muted:   #6B7280;
+  --color-border:       #E5E7EB;
+  --color-danger:       #EF4444;
+  --color-success:      #22C55E;
 
-  --border-radius-sm: 4px;
-  --border-radius-md: 6px;
-  --border-radius-lg: 8px;
+  --radius-sm:    4px;
+  --radius-md:    6px;
+  --radius-lg:    8px;
 
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-card:  0 1px 3px rgba(0, 0, 0, 0.08);
 
-  --font-sans: 'DM Sans', 'Helvetica Neue', sans-serif;
-  --font-mono: 'DM Mono', monospace;
+  --font-sans:    'DM Sans', 'Helvetica Neue', sans-serif;
+  --font-mono:    'DM Mono', 'Courier New', monospace;
+}
+
+[data-theme="dark"] {
+  --color-accent:       #2DD4BF;
+  --color-bg:           #0F1318;
+  --color-surface:      #1A1F2E;
+  --color-surface-alt:  #222838;
+  --color-text:         #F9FAFB;
+  --color-text-muted:   #9CA3AF;
+  --color-border:       #2D3348;
+  --color-danger:       #F87171;
+  --color-success:      #4ADE80;
+
+  --shadow-card:  0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -26,7 +42,7 @@
 body {
   margin: 0;
   background-color: var(--color-bg);
-  color: var(--color-text-primary);
+  color: var(--color-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
