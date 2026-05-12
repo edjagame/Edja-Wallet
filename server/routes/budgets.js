@@ -27,14 +27,14 @@ router.get('/', auth, async (req, res) => {
 // POST a new budget for a logged-in user
 router.post('/', auth, async (req, res) => {
   try {
-    const { category_id, monthly_limit } = req.body;
+    const { category_id, monthly_limit, month } = req.body;
     
     // Insert new budget record and return the created row
     const newBudget = await pool.query(
       `INSERT INTO budgets (user_id, category_id, monthly_limit) 
-       VALUES ($1, $2, $3) 
+       VALUES ($1, $2, $3, $4) 
        RETURNING *`,
-      [req.user.id, category_id, monthly_limit]
+      [req.user.id, category_id, monthly_limit, month]
     );
 
     res.json(newBudget.rows[0]);
