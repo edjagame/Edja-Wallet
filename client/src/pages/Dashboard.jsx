@@ -4,36 +4,67 @@ import { AuthContext } from '../context/AuthContext';
 import axios from '../api/axios';
 import BudgetChart from '../components/BudgetChart';
 
+/**
+ * Dashboard Page
+ * 
+ * Provides an overview of the user's financial status,
+ * including a visualization of their budgets.
+ */
 function Dashboard() {
   const { user, logout } = useContext(AuthContext);
   
+  // --- State Management ---
   const [budgets, setBudgets] = useState([]);  
 
-  // Fetch budgets from the backend
+  // --- Data Fetching ---
+  // Retrieves the user's budget records from the API for the current month
   const fetchBudgets = async () => {
     try{
-      const res = await axios.get(`/budgets`);
+      const currentMonth = new Date().toISOString().substring(0, 7);
+      const res = await axios.get(`/budgets?month=${currentMonth}`);
       setBudgets(res.data);
     } catch (err) {
       console.error('Error fetching budgets:', err);
     }
   };
 
+  // Fetch initial data on component mount
   useEffect(() =>{
     fetchBudgets();
   },[]);
 
-  // If the user isn't logged in, redirect them to the login page
+  // Auth Guard: Redirect unauthenticated users to Login
   if (!user) {
     return <Navigate to="/login" />;
   }
 
+  // Calculate Totals
+  const totalLimit = budgets.reduce((acc, b) => acc + parseFloat(b.monthly_limit || 0), 0);
+  const totalSpent = budgets.reduce((acc, b) => acc + parseFloat(b.amount_spent || 0), 0);
+
+  // --- Rendering ---
   return (
     <div className="App">
       <div className="card">
         <h1>Dashboard</h1>
         <p>Welcome back, {user.name || 'User'}!</p>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-around', margin: '20px 0' }}>
+          <div>
+            <h3>Total Limit</h3>
+            <p className="amount">{totalLimit.toFixed(2)}</p>
+          </div>
+          <div>
+            <h3>Total Spent</h3>
+            <p className="amount" style={{ color: totalSpent > totalLimit ? '#EF4444' : 'inherit' }}>
+              {totalSpent.toFixed(2)}
+            </p>
+          </div>
+        </div>
+
+        {/* Visual breakdown of budgets */}
         <BudgetChart budgets = {budgets}/>
+        
         <button onClick={logout}>Log Out</button>
       </div>
     </div>

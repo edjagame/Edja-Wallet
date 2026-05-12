@@ -3,7 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 
+/**
+ * Register Page
+ * 
+ * Allows new users to create an account by providing name, email, and password.
+ * Automatically logs in and redirects the user on successful registration.
+ */
 function Register() {
+    // --- State Management ---
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -11,29 +18,28 @@ function Register() {
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
 
+    // --- Event Handlers ---
+    // Submits new account details to the server
     const handleRegister = async (e) => {
         e.preventDefault();
-        console.log("Submitting:", { name, email, password });
         try {
-            
-            // Send details to server
+            // Create user account
             const response = await axios.post('/auth/register', { name, email, password });
             
-            // Get token and user data from response
+            // Extract session data
             const { token, user } = response.data;
             
-            // Save token to localStorage
+            // Persist token
             localStorage.setItem('authToken', token);
             
             // Update AuthContext
             login(user);
             
-            // Redirect user to Dashboard
+            // Redirect to home page
             navigate('/');
-
-            console.log("Registration successful:", response.data);
         } catch (err) {
             console.error("Registration failed:", err);
+            // Handle registration-specific errors from server
             if (err.response && err.response.data && err.response.data.message) {
                 setError(err.response.data.message);
             } else {
@@ -41,15 +47,37 @@ function Register() {
             }
         }
     };
+
+    // --- Rendering ---
     return (
         <div>
             <h1>Register</h1>
+            {/* Validation/API error feedback */}
             {error && <p className="text-danger">{error}</p>}
+            
             <form onSubmit={handleRegister}>
-            <input type="name" value={name} onChange={e => setName(e.target.value)} placeholder="Name" required />
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required />
-            <button type="submit">Register</button>
+                <input 
+                  type="text" 
+                  value={name} 
+                  onChange={e => setName(e.target.value)} 
+                  placeholder="Name" 
+                  required 
+                />
+                <input 
+                  type="email" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  placeholder="Email" 
+                  required 
+                />
+                <input 
+                  type="password" 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  placeholder="Password" 
+                  required 
+                />
+                <button type="submit">Register</button>
             </form>
         </div>
     );

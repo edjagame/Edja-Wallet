@@ -2,9 +2,16 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './navbar.css';
 
+/**
+ * LoggedOutNavbar Component
+ * 
+ * Navigation bar for users who are not yet authenticated.
+ * Displays primary actions like Login and Register.
+ */
 function LoggedOutNavbar() {
     const navigate = useNavigate();
 
+    // --- Navigation Handlers ---
     const handleDashboardClick = () => {
         navigate('/');
     }

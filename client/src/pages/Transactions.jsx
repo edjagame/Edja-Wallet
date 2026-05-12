@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from '../api/axios';
 import TransactionForm from '../components/TransactionForm';
 import TransactionList from '../components/TransactionList';
+import TransactionSearch from '../components/TransactionSearch';
 
 /**
  * Transactions Page
@@ -13,16 +14,32 @@ function Transactions() {
   // --- State Management ---
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+
+  // Default filters
+  const [activeFilters, setActiveFilters] = useState({
+    search: '',
+    month: new Date().toISOString().substring(0, 7),
+    categoryId: '',
+    minAmount: '',
+    maxAmount: ''
+  });
 
   // --- Data Fetching ---
 
   // Fetches transactions from the backend, optionally filtered by a search query
-  const fetchTransactions = async (query = '') => {
+  const fetchTransactions = async (filters = activeFilters) => {
     try {
-      const res = await axios.get(`/transactions?search=${query}`);
+      const params = new URLSearchParams();
+      if (filters.search) params.append('search', filters.search);
+      if (filters.month) params.append('month', filters.month);
+      if (filters.categoryId) params.append('categoryId', filters.categoryId);
+      if (filters.minAmount) params.append('minAmount', filters.minAmount);
+      if (filters.maxAmount) params.append('maxAmount', filters.maxAmount);
+
+      const res = await axios.get(`/transactions?${params.toString()}`);
       setTransactions(res.data);
+      setActiveFilters(filters);
     } catch (err) {
       console.error('Error fetching transactions:', err);
     }
@@ -46,10 +63,8 @@ function Transactions() {
 
   // --- Event Handlers ---
 
-  // Triggers a new fetch request when the search form is submitted
-  const handleSearch = (e) => {
-    e.preventDefault();
-    fetchTransactions(searchQuery);
+  const handleSearch = (filters) => {
+    fetchTransactions(filters);
   };
 
   // Deletes the currently selected transaction
@@ -107,22 +122,11 @@ function Transactions() {
     <div className="transactions-page">
       <h1>Transactions</h1>
 
-      {/* Search Bar Section */}
-      <div className="mb-20">
-        <form onSubmit={handleSearch}>
-          <input
-            type="text"
-            placeholder="Search by description..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="mr-10"
-          />
-          <button type="submit">Search</button>
-        </form>
-      </div>
+      {/* Robust Search Component */}
+      <TransactionSearch onSearch={handleSearch} categories={categories} />
 
       {/* Add New Transaction Form */}
-      <TransactionForm onTransactionAdded={() => fetchTransactions()} />
+      <TransactionForm onTransactionAdded={() => fetchTransactions(activeFilters)} />
 
       <hr className="my-32" />
 

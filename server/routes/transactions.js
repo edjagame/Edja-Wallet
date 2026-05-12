@@ -6,30 +6,50 @@ const pool = require('../db');
 // GET all transactions for the logged-in user (with optional search)
 router.get('/', auth, async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, month, categoryId, minAmount, maxAmount } = req.query;
 
-    // If a search term exists, filter by description (case-insensitive)
+    let queryText = `
+      SELECT t.*, c.name AS category_name, c.icon AS category_icon, c.type AS category_type 
+      FROM transactions t
+      LEFT JOIN categories c ON t.category_id = c.id
+      WHERE t.user_id = $1
+    `;
+    const queryParams = [req.user.id];
+    let paramIndex = 2;
+
     if (search) {
-      const result = await pool.query(
-        `SELECT t.*, c.name AS category_name, c.icon AS category_icon, c.type AS category_type 
-         FROM transactions t
-         LEFT JOIN categories c ON t.category_id = c.id
-         WHERE t.user_id = $1 AND t.description ILIKE $2
-         ORDER BY t.created_at DESC`,
-        [req.user.id, `%${search}%`]
-      );
-      return res.json(result.rows);
+      queryText += ` AND t.description ILIKE $${paramIndex}`;
+      queryParams.push(`%${search}%`);
+      paramIndex++;
     }
 
-    // If no search term, return all transactions for the user
-    const result = await pool.query(
-      `SELECT t.*, c.name AS category_name, c.icon AS category_icon, c.type AS category_type 
-       FROM transactions t
-       LEFT JOIN categories c ON t.category_id = c.id
-       WHERE t.user_id = $1
-       ORDER BY t.created_at DESC`,
-      [req.user.id]
-    );
+    if (month) {
+      queryText += ` AND date_trunc('month', t.date) = date_trunc('month', $${paramIndex}::date)`;
+      queryParams.push(`${month}-01`);
+      paramIndex++;
+    }
+
+    if (categoryId) {
+      queryText += ` AND t.category_id = $${paramIndex}`;
+      queryParams.push(categoryId);
+      paramIndex++;
+    }
+
+    if (minAmount) {
+      queryText += ` AND t.amount >= $${paramIndex}`;
+      queryParams.push(minAmount);
+      paramIndex++;
+    }
+
+    if (maxAmount) {
+      queryText += ` AND t.amount <= $${paramIndex}`;
+      queryParams.push(maxAmount);
+      paramIndex++;
+    }
+
+    queryText += ` ORDER BY t.created_at DESC`;
+
+    const result = await pool.query(queryText, queryParams);
     res.json(result.rows);
   } catch (err) {
     res.status(500).send("Server Error");

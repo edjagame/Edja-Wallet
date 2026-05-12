@@ -93,8 +93,8 @@ input, select {
   cursor: not-allowed;
 }
 
-/* Category Grid Item */
-.category-item {
+/* Category & Budget Grid Item */
+.category-item, .budget-item {
   border: 1px solid #E5E7EB;
   padding: 12px;
   border-radius: 8px; /* Brand Guide says 8px for Cards/Panels */
@@ -102,7 +102,7 @@ input, select {
   background-color: #FFFFFF;
   transition: background-color 0.2s;
 }
-.category-item.selected {
+.category-item.selected, .budget-item.selected {
   background-color: #F9FAFB; /* Off-white for selection or #E5E7EB */
   border-color: #2DD4BF;
 }

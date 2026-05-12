@@ -7,8 +7,8 @@ import CategoryList from '../components/CategoryList';
  * Categories Page
  * 
  * Main container for managing transaction categories.
- * Handles fetching categories, displaying the creation form,
- * and listing the categories with deletion capability.
+ * Handles fetching categories, displaying forms,
+ * and listing items with deletion capability.
  */
 function Categories() {
   // --- State Management ---
@@ -16,7 +16,6 @@ function Categories() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   // --- Data Fetching ---
-  // Retrieves the user's categories from the backend
   const fetchCategories = async () => {
     try {
       const res = await axios.get('/categories');
@@ -26,57 +25,43 @@ function Categories() {
     }
   };
 
-  // Load categories when the component amounts
+  // Load data when the component mounts
   useEffect(() => {
     fetchCategories();
   }, []);
 
   // --- Event Handlers ---
-  // Deletes the currently selected category
-  const handleDelete = async () => {
+  const handleDeleteCategory = async () => {
     if (!selectedCategoryId) return;
-
-    // Ask for confirmation before deleting
     const isConfirmed = window.confirm("Are you sure you want to delete this category?");
     if (!isConfirmed) return;
 
     try {
       await axios.delete(`/categories/${selectedCategoryId}`);
-      // Remove it from the local state
       setCategories(categories.filter(c => c.id !== selectedCategoryId));
-      // Clear the selection
       setSelectedCategoryId(null);
     } catch (err) {
       console.error("Failed to delete category:", err);
-      alert("Failed to delete category.");
     }
   };
 
   // --- Rendering ---
   return (
     <div className="categories-page">
-      <h1>Categories</h1>
-
-      {/* Add New Category Form */}
-      <CategoryForm onCategoryAdded={fetchCategories} />
-
-      {/* Global Actions Bar */}
-      <div className="mb-20">
-        <button 
-          onClick={handleDelete} 
-          disabled={!selectedCategoryId}
-          className="btn-danger"
-        >
-          Delete Selected
-        </button>
-      </div>
-
-      {/* Category List */}
-      <CategoryList 
-        categories={categories} 
-        selectedCategoryId={selectedCategoryId} 
-        onSelectCategory={setSelectedCategoryId} 
-      />
+      <section className="mb-40">
+        <h1>Categories</h1>
+        <CategoryForm />
+        <div className="mb-20">
+          <button onClick={handleDeleteCategory} disabled={!selectedCategoryId} className="btn-danger">
+            Delete Selected Category
+          </button>
+        </div>
+        <CategoryList 
+          categories={categories} 
+          selectedCategoryId={selectedCategoryId} 
+          onSelectCategory={setSelectedCategoryId} 
+        />
+      </section>
     </div>
   );
 }

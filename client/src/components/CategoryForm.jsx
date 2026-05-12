@@ -23,10 +23,7 @@ function CategoryForm({ onCategoryAdded }) {
       setName('');
       setType('expense');
       setIcon('');
-      // Notify parent component that a category was added
-      if (onCategoryAdded) {
-        onCategoryAdded();
-      }
+      alert("Category created successfully");
     } catch (err) {
       console.error("Error adding category:", err);
     }
@@ -49,7 +46,7 @@ function CategoryForm({ onCategoryAdded }) {
       </select>
       <input
         type="text"
-        placeholder="Icon (e.g. 🍔)"
+        placeholder="(Optional) Icon (e.g. 🍔)"
         value={icon}
         onChange={e => setIcon(e.target.value)}
         className="mr-10"
