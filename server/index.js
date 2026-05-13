@@ -17,10 +17,18 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// TODO: CHANGE FRONTEND_URL DOMAIN BEFORE DEPLOYMENT
 // Limit CORS to the specific frontend domain
+let allowedOrigins = ['http://localhost:3000', 'http://localhost', 'http://localhost:80'];
+if (process.env.FRONTEND_URL) {
+    // Remove trailing slash if present to match the origin header exactly
+    const sanitizedUrl = process.env.FRONTEND_URL.endsWith('/') 
+        ? process.env.FRONTEND_URL.slice(0, -1) 
+        : process.env.FRONTEND_URL;
+    allowedOrigins.push(sanitizedUrl);
+}
+
 const corsOptions = {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: allowedOrigins,
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));

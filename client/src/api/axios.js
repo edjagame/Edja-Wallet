@@ -1,7 +1,14 @@
 import axios from 'axios';
 
+// Provide a relative fallback URL so Nginx can proxy it.
+const rawApiUrl = process.env.REACT_APP_API_URL || '/api';
+let baseURL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
+if (!baseURL.endsWith('/api') && baseURL !== '/api') {
+    baseURL += '/api';
+}
+
 const instance = axios.create({
-    baseURL: process.env.REACT_APP_API_URL, 
+    baseURL, 
 });
 
 instance.interceptors.request.use((config) => {
