@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../db');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // Register
@@ -120,7 +120,7 @@ router.post('/forgot-password', async (req, res) => {
 
         if (user.rows.length > 0) {
             // Generate UUID token
-            const resetToken = uuidv4();
+            const resetToken = crypto.randomUUID();
             // 1 hour expiry
             const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000);
             
