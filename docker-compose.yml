@@ -10,14 +10,11 @@ services:
       - pgdata:/var/lib/postgresql/data
       # Initialize the database on first run
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "5432:5432"
     restart: unless-stopped
 
   server:
     build: ./server
-    ports:
-      - "5000:5000"
+    # No 'ports' needed — only Nginx (client) talks to the server via Docker's internal network
     environment:
       DB_USER: ${POSTGRES_USER:-edja_user}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-edja_password}

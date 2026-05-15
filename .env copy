@@ -1,0 +1,15 @@
+# --- Database Configuration ---
+POSTGRES_USER=edja_user
+POSTGRES_PASSWORD=e99e76cf7a01705f853abefe7b2226793dcb067e45ea7109a080570b6ee015891963ebfda72c90026a7cc2347b317207054f9f3cb7fffcfc407e9733edf6da4d
+POSTGRES_DB=edja_wallet
+
+# --- Server Configuration ---
+JWT_SECRET=1a84a6f4e7dc15c08f081acaab5ab95d0bec82e8dd5a99f86c5e51c3baf32a65bc6dcca606b27aa2e8bd063475d82022646429d07b41b371a63624db440502d0
+PORT=5000
+
+# URL where your frontend lives (used by the backend for CORS)
+FRONTEND_URL=http://137.184.218.249:3000
+
+# --- Client Configuration ---
+# URL where your backend API lives (used by the frontend build process)
+REACT_APP_API_URL=http://137.184.218.249:5000

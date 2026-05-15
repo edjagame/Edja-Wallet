@@ -25,10 +25,17 @@ if (process.env.FRONTEND_URL) {
         ? process.env.FRONTEND_URL.slice(0, -1) 
         : process.env.FRONTEND_URL;
     allowedOrigins.push(sanitizedUrl);
+    // Also allow the opposite protocol (http <-> https) for Cloudflare Flexible SSL
+    if (sanitizedUrl.startsWith('https://')) {
+        allowedOrigins.push(sanitizedUrl.replace('https://', 'http://'));
+    } else if (sanitizedUrl.startsWith('http://')) {
+        allowedOrigins.push(sanitizedUrl.replace('http://', 'https://'));
+    }
 }
 
 const corsOptions = {
     origin: allowedOrigins,
+    credentials: true,
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
