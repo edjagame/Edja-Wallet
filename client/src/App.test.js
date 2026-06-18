@@ -1,8 +1,21 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
+import axios from './api/axios';
 
-test('renders learn react link', () => {
+jest.mock('./api/axios', () => ({
+  get: jest.fn(),
+  post: jest.fn()
+}));
+
+beforeEach(() => {
+  localStorage.clear();
+  axios.get.mockResolvedValue({ data: [] });
+});
+
+test('renders the app shell', async () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+
+  await waitFor(() => {
+    expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
+  });
 });
