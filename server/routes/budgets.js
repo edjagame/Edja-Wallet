@@ -3,6 +3,15 @@ const router = express.Router();
 const auth = require('../middleware/authMiddleware');
 const pool = require('../db')
 
+async function categoryBelongsToUser(categoryId, userId) {
+  const result = await pool.query(
+    'SELECT id FROM categories WHERE id = $1 AND user_id = $2',
+    [categoryId, userId]
+  );
+
+  return result.rows.length > 0;
+}
+
 // GET all budgets for a logged-in user
 router.get('/', auth, async (req, res) => {
   try {
@@ -50,6 +59,10 @@ router.post('/', auth, async (req, res) => {
 
     if (parseFloat(monthly_limit) <= 0) {
       return res.status(400).json({ message: "Monthly limit must be a positive number" });
+    }
+
+    if (!category_id || !(await categoryBelongsToUser(category_id, req.user.id))) {
+      return res.status(400).json({ message: "Invalid category" });
     }
     
     // Insert new budget record and return the created row

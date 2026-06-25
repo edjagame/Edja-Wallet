@@ -3,6 +3,15 @@ const router = express.Router();
 const auth = require('../middleware/authMiddleware');
 const pool = require('../db');
 
+async function categoryBelongsToUser(categoryId, userId) {
+  const result = await pool.query(
+    'SELECT id FROM categories WHERE id = $1 AND user_id = $2',
+    [categoryId, userId]
+  );
+
+  return result.rows.length > 0;
+}
+
 // GET all transactions for the logged-in user (with optional search)
 router.get('/', auth, async (req, res) => {
   try {
@@ -60,6 +69,11 @@ router.get('/', auth, async (req, res) => {
 router.post('/', auth, async (req, res) => {
   try {
     const { amount, description, categoryId, occurredAt } = req.body;
+
+    if (!categoryId || !(await categoryBelongsToUser(categoryId, req.user.id))) {
+      return res.status(400).json({ message: 'Invalid category' });
+    }
+
     const newTransaction = await pool.query(
       `INSERT INTO transactions (user_id, amount, description, category_id, occurred_at) 
        VALUES ($1, $2, $3, $4, COALESCE($5::timestamp, NOW())) 
@@ -81,6 +95,13 @@ router.put('/:id', auth, async (req, res) => {
     const { id } = req.params;
     const { amount, description, categoryId, occurredAt, createdAt } = req.body;
     const transactionTime = occurredAt || createdAt || null;
+
+    if (
+      categoryId !== null &&
+      (!categoryId || !(await categoryBelongsToUser(categoryId, req.user.id)))
+    ) {
+      return res.status(400).json({ message: 'Invalid category' });
+    }
 
     const result = await pool.query(
       `UPDATE transactions
