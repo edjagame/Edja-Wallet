@@ -24,7 +24,7 @@ router.get('/', auth, async (req, res) => {
     }
 
     if (month) {
-      queryText += ` AND date_trunc('month', t.date) = date_trunc('month', $${paramIndex}::date)`;
+      queryText += ` AND date_trunc('month', t.occurred_at) = date_trunc('month', $${paramIndex}::date)`;
       queryParams.push(`${month}-01`);
       paramIndex++;
     }
@@ -47,7 +47,7 @@ router.get('/', auth, async (req, res) => {
       paramIndex++;
     }
 
-    queryText += ` ORDER BY t.created_at DESC`;
+    queryText += ` ORDER BY t.occurred_at DESC, t.created_at DESC`;
 
     const result = await pool.query(queryText, queryParams);
     res.json(result.rows);
@@ -59,12 +59,12 @@ router.get('/', auth, async (req, res) => {
 
 router.post('/', auth, async (req, res) => {
   try {
-    const { amount, description, categoryId } = req.body;
+    const { amount, description, categoryId, occurredAt } = req.body;
     const newTransaction = await pool.query(
-      `INSERT INTO transactions (user_id, amount, description, category_id) 
-       VALUES ($1, $2, $3, $4) 
+      `INSERT INTO transactions (user_id, amount, description, category_id, occurred_at) 
+       VALUES ($1, $2, $3, $4, COALESCE($5::timestamp, NOW())) 
        RETURNING *`,
-      [req.user.id, amount, description, categoryId]
+      [req.user.id, amount, description, categoryId, occurredAt || null]
     );
 
     res.json(newTransaction.rows[0]);
@@ -79,14 +79,15 @@ router.post('/', auth, async (req, res) => {
 router.put('/:id', auth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { amount, description, categoryId, createdAt } = req.body;
+    const { amount, description, categoryId, occurredAt, createdAt } = req.body;
+    const transactionTime = occurredAt || createdAt || null;
 
     const result = await pool.query(
       `UPDATE transactions
-       SET amount = $1, description = $2, category_id = $3, created_at = $4
+       SET amount = $1, description = $2, category_id = $3, occurred_at = COALESCE($4::timestamp, occurred_at)
        WHERE id = $5 AND user_id = $6
        RETURNING *`,
-      [amount, description, categoryId, createdAt, id, req.user.id]
+      [amount, description, categoryId, transactionTime, id, req.user.id]
     );
 
     if (result.rows.length === 0) {

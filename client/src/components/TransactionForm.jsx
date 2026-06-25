@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../api/axios';
 
+const formatForDateTimeInput = (date = new Date()) => {
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+};
+
 /**
  * TransactionForm Component
  * 
@@ -12,6 +17,7 @@ function TransactionForm({ onTransactionAdded }) {
   const [transactionType, setTransactionType] = useState('expense');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
+  const [occurredAt, setOccurredAt] = useState(formatForDateTimeInput);
   const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
   const [successMessage, setSuccessMessage] = useState('');
@@ -55,11 +61,12 @@ function TransactionForm({ onTransactionAdded }) {
 
     try {
       // Send transaction data to the backend
-      const res = await axios.post('/transactions', { amount, description, categoryId });
+      const res = await axios.post('/transactions', { amount, description, categoryId, occurredAt });
       
       // Reset form state on successful submission
       setDescription('');
       setAmount('');
+      setOccurredAt(formatForDateTimeInput());
       setCategoryId('');
       
       // Show success message and clear it after 3 seconds
@@ -127,6 +134,14 @@ function TransactionForm({ onTransactionAdded }) {
           onChange={(e) => setAmount(e.target.value)}
           min="0"
           step="0.01"
+          required
+        />
+
+        <input
+          type="datetime-local"
+          aria-label="Transaction date and time"
+          value={occurredAt}
+          onChange={(e) => setOccurredAt(e.target.value)}
           required
         />
 

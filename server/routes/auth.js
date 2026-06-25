@@ -5,6 +5,16 @@ const jwt = require('jsonwebtoken');
 const pool = require('../db');
 const crypto = require('crypto');
 const authMiddleware = require('../middleware/authMiddleware');
+const { sendPasswordResetEmail } = require('../utils/mailer');
+
+const hashResetToken = (token) => {
+    return crypto.createHash('sha256').update(token).digest('hex');
+};
+
+const buildPasswordResetUrl = (token) => {
+    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+    return `${frontendUrl}/reset-password?token=${encodeURIComponent(token)}`;
+};
 
 // Register
 router.post('/register', async (req, res) => {
@@ -119,19 +129,20 @@ router.post('/forgot-password', async (req, res) => {
         res.json({ message: "If an account with that email exists, a password reset link has been sent." });
 
         if (user.rows.length > 0) {
-            // Generate UUID token
-            const resetToken = crypto.randomUUID();
+            const resetToken = crypto.randomBytes(32).toString('hex');
+            const resetTokenHash = hashResetToken(resetToken);
             // 1 hour expiry
             const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000);
             
             await pool.query(
                 "UPDATE users SET reset_token = $1, reset_token_expiry = $2 WHERE id = $3",
-                [resetToken, resetTokenExpiry, user.rows[0].id]
+                [resetTokenHash, resetTokenExpiry, user.rows[0].id]
             );
 
-            // Simulate email send
-            console.log(`[SIMULATED EMAIL] To: ${email}, Subject: Password Reset`);
-            console.log(`Link: http://localhost:3000/reset-password?token=${resetToken}`);
+            await sendPasswordResetEmail({
+                to: user.rows[0].email,
+                resetUrl: buildPasswordResetUrl(resetToken)
+            });
         }
     } catch (err) {
         console.error(err.message);
@@ -146,9 +157,11 @@ router.post('/reset-password', async (req, res) => {
             return res.status(400).json({ message: "Token and new password are required" });
         }
 
+        const resetTokenHash = hashResetToken(token);
+
         const user = await pool.query(
             "SELECT * FROM users WHERE reset_token = $1 AND reset_token_expiry > NOW()",
-            [token]
+            [resetTokenHash]
         );
 
         if (user.rows.length === 0) {

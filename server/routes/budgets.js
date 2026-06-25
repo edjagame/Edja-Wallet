@@ -18,7 +18,7 @@ router.get('/', auth, async (req, res) => {
              FROM transactions t 
              WHERE t.category_id = b.category_id 
                AND t.user_id = b.user_id 
-               AND date_trunc('month', t.date) = date_trunc('month', b.month)
+               AND date_trunc('month', t.occurred_at) = date_trunc('month', b.month)
             ), 0
           ) as amount_spent
        FROM budgets b

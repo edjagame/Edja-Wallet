@@ -11,7 +11,7 @@ import React, { useState } from 'react';
  * @param {Array}    transactions         - List of transaction objects to display
  * @param {string|number} selectedTransactionId - ID of the currently selected row
  * @param {Function} onSelectTransaction  - Called with the row's ID (or null) on single-click
- * @param {Function} onSaveEdit           - Called with (id, { amount, description, categoryId, createdAt }) on save
+ * @param {Function} onSaveEdit           - Called with (id, { amount, description, categoryId, occurredAt }) on save
  * @param {Array}    categories           - List of { id, name, icon } objects for the category dropdown
  */
 function TransactionList({
@@ -24,7 +24,7 @@ function TransactionList({
   // ID of the row currently being edited, or null
   const [editingId, setEditingId] = useState(null);
   // Working copy of the editable fields while in edit mode
-  const [editDraft, setEditDraft] = useState({ description: '', amount: '', categoryId: '', createdAt: '' });
+  const [editDraft, setEditDraft] = useState({ description: '', amount: '', categoryId: '', occurredAt: '' });
 
   // --- Helpers ---
 
@@ -45,14 +45,14 @@ function TransactionList({
       description: t.description,
       amount: t.amount,
       categoryId: t.category_id ?? '',
-      createdAt: formatForInput(t.created_at),
+      occurredAt: formatForInput(t.occurred_at || t.created_at),
     });
   };
 
   /** Abort edit without saving */
   const cancelEdit = () => {
     setEditingId(null);
-    setEditDraft({ description: '', amount: '', categoryId: '', createdAt: '' });
+    setEditDraft({ description: '', amount: '', categoryId: '', occurredAt: '' });
   };
 
   /** Persist changes to the parent */
@@ -108,13 +108,14 @@ function TransactionList({
                     {isEditing ? (
                       <input
                         type="datetime-local"
-                        value={editDraft.createdAt}
-                        onChange={(e) => updateDraft('createdAt', e.target.value)}
+                        aria-label="Transaction date and time"
+                        value={editDraft.occurredAt}
+                        onChange={(e) => updateDraft('occurredAt', e.target.value)}
                         onClick={(e) => e.stopPropagation()}
                         className="p-4"
                       />
                     ) : (
-                      new Date(t.created_at).toLocaleString()
+                      new Date(t.occurred_at || t.created_at).toLocaleString()
                     )}
                   </td>
 

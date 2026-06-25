@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import axios from '../api/axios';
 import TransactionForm from './TransactionForm';
@@ -48,6 +48,9 @@ test('posts selected transaction data, resets fields, and calls onTransactionAdd
   await within(categorySelect).findByRole('option', { name: /groceries/i });
   userEvent.type(screen.getByPlaceholderText(/description/i), 'Market run');
   userEvent.type(screen.getByPlaceholderText(/amount/i), '42.50');
+  fireEvent.change(screen.getByLabelText(/transaction date and time/i), {
+    target: { value: '2026-06-15T09:30' }
+  });
   userEvent.selectOptions(categorySelect, '2');
   userEvent.click(screen.getByRole('button', { name: /add expense/i }));
 
@@ -55,7 +58,8 @@ test('posts selected transaction data, resets fields, and calls onTransactionAdd
     expect(axios.post).toHaveBeenCalledWith('/transactions', {
       amount: '42.50',
       description: 'Market run',
-      categoryId: '2'
+      categoryId: '2',
+      occurredAt: '2026-06-15T09:30'
     });
   });
   expect(onTransactionAdded).toHaveBeenCalledWith(createdTransaction);

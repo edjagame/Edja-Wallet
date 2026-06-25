@@ -48,21 +48,31 @@ App runs at `http://localhost:3000`, API at `http://localhost:5000`.
 
 ## Environment Variables
 
-The `.env.example` file in `/server` is already configured for Docker. When running with `docker compose`, the environment variables are automatically set. If you need custom values, edit `.env.example` and recreate the containers:
+The root `.env.example` file is configured for Docker and local development. When running with `docker compose`, the environment variables are automatically set. If you need custom values, copy `.env.example` to `.env`, edit it, and recreate the containers:
 
 ```bash
 docker compose down
 docker compose up -d
 ```
 
-| Variable      | Default (Docker) | Description          |
-|---------------|------------------|----------------------|
-| DB_HOST       | postgres         | Database host        |
-| DB_PORT       | 5432             | Database port        |
-| DB_USER       | wallet_user      | PostgreSQL username  |
-| DB_PASSWORD   | wallet_password  | PostgreSQL password  |
-| DB_NAME       | edja_wallet      | Database name        |
-| PORT          | 5000             | Server port          |
+| Variable      | Default (Docker) | Description                         |
+|---------------|------------------|-------------------------------------|
+| DB_HOST       | db               | Database host                       |
+| DB_PORT       | 5432             | Database port                       |
+| DB_USER       | edja_user        | PostgreSQL username                 |
+| DB_PASSWORD   | edja_password    | PostgreSQL password                 |
+| DB_NAME       | edja_wallet      | Database name                       |
+| JWT_SECRET    | your_super_secret_jwt_key | JWT signing secret       |
+| PORT          | 5000             | Server port                         |
+| FRONTEND_URL  | http://localhost | URL used for CORS and reset links   |
+| SMTP_HOST     |                  | SMTP server host                    |
+| SMTP_PORT     | 587              | SMTP server port                    |
+| SMTP_SECURE   | false            | Use TLS for the SMTP connection     |
+| SMTP_USER     |                  | SMTP username                       |
+| SMTP_PASS     |                  | SMTP password                       |
+| MAIL_FROM     | Edja Wallet <no-reply@edjawallet.local> | Sender address |
+
+If `SMTP_HOST` is empty, password reset emails are written to the server logs as JSON for local development. Set the SMTP values to send real email through a provider.
 
 ## Useful Docker Commands
 
@@ -94,6 +104,8 @@ docker compose up -d
 | DELETE | /api/transactions/:id     | Delete a transaction     |
 | GET    | /api/categories           | Get all categories       |
 | GET    | /api/budgets              | Get all budgets          |
+| POST   | /api/auth/forgot-password | Email a password reset link |
+| POST   | /api/auth/reset-password  | Reset password with token |
 
 ## License
 

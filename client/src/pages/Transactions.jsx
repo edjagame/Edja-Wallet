@@ -90,11 +90,11 @@ function Transactions() {
    * Called by TransactionList when the user clicks ✓ on an editing row.
    *
    * @param {number} id   - The transaction ID to update
-   * @param {Object} data - { amount, description, categoryId, createdAt }
+   * @param {Object} data - { amount, description, categoryId, occurredAt }
    */
-  const handleSaveEdit = async (id, { amount, description, categoryId, createdAt }) => {
+  const handleSaveEdit = async (id, { amount, description, categoryId, occurredAt }) => {
     try {
-      const res = await axios.put(`/transactions/${id}`, { amount, description, categoryId, createdAt });
+      const res = await axios.put(`/transactions/${id}`, { amount, description, categoryId, occurredAt });
       const updated = res.data; // raw DB row (no join), so we need to re-attach category info
 
       // Find the matching category from our local list so we can keep the display fields intact
@@ -107,6 +107,7 @@ function Transactions() {
                 ...updated,
                 category_name: matchedCategory?.name ?? null,
                 category_icon: matchedCategory?.icon ?? null,
+                category_type: matchedCategory?.type ?? null,
               }
             : t
         )

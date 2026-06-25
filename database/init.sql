@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   category_id INT REFERENCES categories(id) ON DELETE SET NULL,
   amount NUMERIC(10,2) NOT NULL,
   description TEXT,
-  date DATE DEFAULT CURRENT_DATE,
+  occurred_at TIMESTAMP NOT NULL DEFAULT NOW(),
   created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS budgets (
 
 -- Indexes to speed up read operations --
 CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions (user_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions (date);
+CREATE INDEX IF NOT EXISTS idx_transactions_occurred_at ON transactions (occurred_at);
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories (user_id);
 CREATE INDEX IF NOT EXISTS idx_budgets_user_id ON budgets (user_id);
 
