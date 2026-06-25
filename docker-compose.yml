@@ -13,7 +13,6 @@ services:
 
   server:
     build: ./server
-    # No 'ports' needed — only Nginx (client) talks to the server via Docker's internal network
     environment:
       DB_USER: ${POSTGRES_USER:-edja_user}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-edja_password}

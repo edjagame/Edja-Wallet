@@ -41,4 +41,3 @@ CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions (user_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_occurred_at ON transactions (occurred_at);
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories (user_id);
 CREATE INDEX IF NOT EXISTS idx_budgets_user_id ON budgets (user_id);
-
