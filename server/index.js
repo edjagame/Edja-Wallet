@@ -8,36 +8,37 @@ require('dotenv').config({ override: true });
 
 const app = express();
 
-// Security Middlewares
+// Apply security headers before any route handlers respond.
 app.use(helmet());
 
-// Global Rate Limiting
+// Keep API abuse bounded while allowing static assets to remain unaffected.
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-    message: 'Too many requests from this IP, please try again later.'
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api', limiter);
 
-// Limit CORS to the specific frontend domain
+// Build a strict origin allow-list for local development and deployed clients.
 let allowedOrigins = ['http://localhost:3000', 'http://localhost', 'http://localhost:80'];
 if (process.env.FRONTEND_URL) {
-    // Remove trailing slash if present to match the origin header exactly
-    const sanitizedUrl = process.env.FRONTEND_URL.endsWith('/') 
-        ? process.env.FRONTEND_URL.slice(0, -1) 
-        : process.env.FRONTEND_URL;
-    allowedOrigins.push(sanitizedUrl);
-    if (sanitizedUrl.startsWith('https://')) {
-        allowedOrigins.push(sanitizedUrl.replace('https://', 'http://'));
-    } else if (sanitizedUrl.startsWith('http://')) {
-        allowedOrigins.push(sanitizedUrl.replace('http://', 'https://'));
-    }
+  const sanitizedUrl = process.env.FRONTEND_URL.endsWith('/')
+    ? process.env.FRONTEND_URL.slice(0, -1)
+    : process.env.FRONTEND_URL;
+
+  allowedOrigins.push(sanitizedUrl);
+
+  if (sanitizedUrl.startsWith('https://')) {
+    allowedOrigins.push(sanitizedUrl.replace('https://', 'http://'));
+  } else if (sanitizedUrl.startsWith('http://')) {
+    allowedOrigins.push(sanitizedUrl.replace('http://', 'https://'));
+  }
 }
 
 const corsOptions = {
-    origin: allowedOrigins,
-    credentials: true,
-    optionsSuccessStatus: 200
+  origin: allowedOrigins,
+  credentials: true,
+  optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 

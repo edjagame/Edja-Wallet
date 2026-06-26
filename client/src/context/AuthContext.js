@@ -2,6 +2,10 @@ import React, { createContext, useState, useEffect } from 'react';
 
 export const AuthContext = createContext();
 
+/**
+ * Stores the authenticated user separately from the JWT. The token stays in
+ * localStorage for axios, while context drives routing and navigation state.
+ */
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>
-        {!loading && children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

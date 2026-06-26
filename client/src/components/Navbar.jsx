@@ -12,7 +12,6 @@ import LoggedOutNavbar from './LoggedOutNavbar';
 function Navbar() {
   const { user } = useContext(AuthContext);
 
-  // Toggle between LoggedIn and LoggedOut views
   return user ? <LoggedInNavbar /> : <LoggedOutNavbar />;
 }
 

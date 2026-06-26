@@ -2,65 +2,59 @@ import React, { useState, useEffect } from 'react';
 import axios from '../api/axios';
 
 /**
- * BudgetForm Component
- * 
- * Provides a form for creating a new budget linked to a category.
- * Triggers a callback on successful creation.
+ * Creates a monthly spending limit for a selected category.
  */
 function BudgetForm() {
-  // --- State Management ---
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState('');
   const [monthlyLimit, setMonthlyLimit] = useState('');
   const [inputMonth, setInputMonth] = useState((new Date().getMonth() + 1).toString());
   const [inputYear, setInputYear] = useState(new Date().getFullYear().toString());
 
-  // Fetch categories to populate the dropdown
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get('/categories');
         setCategories(res.data);
       } catch (err) {
-        console.error("Error fetching categories for budget form:", err);
+        console.error('Error fetching categories for budget form:', err);
       }
     };
+
     fetchCategories();
   }, []);
 
-  // --- Event Handlers ---
-  // Submits the form data to create a new budget
   const handleAddBudget = async (e) => {
     e.preventDefault();
+
     try {
       const formattedMonth = `${inputYear}-${inputMonth.padStart(2, '0')}-01`;
-      await axios.post('/budgets', { 
-        category_id: categoryId, 
-        monthly_limit: monthlyLimit, 
-        month: formattedMonth 
+      await axios.post('/budgets', {
+        category_id: categoryId,
+        monthly_limit: monthlyLimit,
+        month: formattedMonth
       });
-      // Reset form fields
+
       setCategoryId('');
       setMonthlyLimit('');
       setInputMonth((new Date().getMonth() + 1).toString());
       setInputYear(new Date().getFullYear().toString());
-      alert("Budget created successfully");
+      alert('Budget created successfully');
     } catch (err) {
-      console.error("Error adding budget:", err);
+      console.error('Error adding budget:', err);
     }
   };
 
-  // --- Rendering ---
   return (
     <form onSubmit={handleAddBudget} className="mb-20">
-      <select 
-        value={categoryId} 
-        onChange={e => setCategoryId(e.target.value)} 
-        required 
+      <select
+        value={categoryId}
+        onChange={(e) => setCategoryId(e.target.value)}
+        required
         className="mr-10"
       >
         <option value="">Select Category</option>
-        {categories.map(cat => (
+        {categories.map((cat) => (
           <option key={cat.id} value={cat.id}>{cat.name}</option>
         ))}
       </select>
@@ -68,7 +62,7 @@ function BudgetForm() {
         type="number"
         placeholder="Monthly Limit"
         value={monthlyLimit}
-        onChange={e => setMonthlyLimit(e.target.value)}
+        onChange={(e) => setMonthlyLimit(e.target.value)}
         required
         min="0.01"
         step="0.01"
@@ -76,7 +70,7 @@ function BudgetForm() {
       />
       <select
         value={inputMonth}
-        onChange={e => setInputMonth(e.target.value)}
+        onChange={(e) => setInputMonth(e.target.value)}
         required
         className="mr-10"
       >
@@ -97,7 +91,7 @@ function BudgetForm() {
       <input
         type="number"
         value={inputYear}
-        onChange={e => setInputYear(e.target.value)}
+        onChange={(e) => setInputYear(e.target.value)}
         required
         min="2000"
         max="2100"

@@ -13,14 +13,10 @@ import TransactionForm from '../components/TransactionForm';
  */
 function Dashboard() {
   const { user, logout } = useContext(AuthContext);
-  
-  // --- State Management ---
-  const [budgets, setBudgets] = useState([]);  
+  const [budgets, setBudgets] = useState([]);
 
-  // --- Data Fetching ---
-  // Retrieves the user's budget records from the API for the current month
   const fetchBudgets = async () => {
-    try{
+    try {
       const currentMonth = new Date().toISOString().substring(0, 7);
       const res = await axios.get(`/budgets?month=${currentMonth}`);
       setBudgets(res.data);
@@ -29,27 +25,23 @@ function Dashboard() {
     }
   };
 
-  // Fetch initial data on component mount
-  useEffect(() =>{
+  useEffect(() => {
     fetchBudgets();
-  },[]);
+  }, []);
 
-  // Auth Guard: Redirect unauthenticated users to Login
   if (!user) {
     return <Navigate to="/login" />;
   }
 
-  // Calculate Totals
   const totalLimit = budgets.reduce((acc, b) => acc + parseFloat(b.monthly_limit || 0), 0);
   const totalSpent = budgets.reduce((acc, b) => acc + parseFloat(b.amount_spent || 0), 0);
 
-  // --- Rendering ---
   return (
     <div className="App">
       <div className="card">
         <h1>Dashboard</h1>
         <p>Welcome back, {user.name || 'User'}!</p>
-        
+
         <div style={{ display: 'flex', justifyContent: 'space-around', margin: '20px 0' }}>
           <div>
             <h3>Total Limit</h3>
@@ -63,16 +55,14 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Visual breakdown of budgets */}
-        <BudgetChart budgets = {budgets}/>
+        <BudgetChart budgets={budgets} />
 
         <hr style={{ margin: '30px 0' }} />
 
-        {/* Quick Transaction Entry */}
         <div style={{ marginBottom: '30px' }}>
           <TransactionForm onTransactionAdded={fetchBudgets} />
         </div>
-        
+
         <button onClick={logout}>Log Out</button>
       </div>
     </div>

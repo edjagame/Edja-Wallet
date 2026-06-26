@@ -12,13 +12,14 @@ async function categoryBelongsToUser(categoryId, userId) {
   return result.rows.length > 0;
 }
 
-// GET all transactions for the logged-in user (with optional search)
 router.get('/', auth, async (req, res) => {
   try {
     const { search, month, categoryId, minAmount, maxAmount } = req.query;
 
+    // Build a parameterized filter query so optional search fields never
+    // become interpolated SQL values.
     let queryText = `
-      SELECT t.*, c.name AS category_name, c.icon AS category_icon, c.type AS category_type 
+      SELECT t.*, c.name AS category_name, c.icon AS category_icon, c.type AS category_type
       FROM transactions t
       LEFT JOIN categories c ON t.category_id = c.id
       WHERE t.user_id = $1
@@ -61,7 +62,7 @@ router.get('/', auth, async (req, res) => {
     const result = await pool.query(queryText, queryParams);
     res.json(result.rows);
   } catch (err) {
-    res.status(500).send("Server Error");
+    res.status(500).send('Server Error');
     console.error(err);
   }
 });
@@ -75,21 +76,19 @@ router.post('/', auth, async (req, res) => {
     }
 
     const newTransaction = await pool.query(
-      `INSERT INTO transactions (user_id, amount, description, category_id, occurred_at) 
-       VALUES ($1, $2, $3, $4, COALESCE($5::timestamp, NOW())) 
+      `INSERT INTO transactions (user_id, amount, description, category_id, occurred_at)
+       VALUES ($1, $2, $3, $4, COALESCE($5::timestamp, NOW()))
        RETURNING *`,
       [req.user.id, amount, description, categoryId, occurredAt || null]
     );
 
     res.json(newTransaction.rows[0]);
   } catch (err) {
-    res.status(500).send("Server Error");
+    res.status(500).send('Server Error');
     console.error(err);
   }
 });
 
-
-// UPDATE transaction
 router.put('/:id', auth, async (req, res) => {
   try {
     const { id } = req.params;
@@ -122,23 +121,22 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// DELETE transaction
 router.delete('/:id', auth, async (req, res) => {
   try {
     const { id } = req.params;
-    const deleteTransaction = await pool.query(`
-      DELETE FROM transactions
-      WHERE user_id = $1
-      AND id = $2
-      RETURNING *;`,
+    const deleteTransaction = await pool.query(
+      `DELETE FROM transactions
+       WHERE user_id = $1
+       AND id = $2
+       RETURNING *;`,
       [req.user.id, id]
     );
+
     res.json(deleteTransaction.rows[0]);
   } catch (err) {
-    res.status(500).send("Server Error");
+    res.status(500).send('Server Error');
     console.error(err);
   }
-
 });
 
 module.exports = router;

@@ -14,6 +14,9 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import './App.css';
 
+/**
+ * Wires global providers around the application routes.
+ */
 function App() {
   return (
     <ThemeProvider>
@@ -31,7 +34,6 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              {/* Fallback */}
               <Route path="*" element={<Dashboard />} />
             </Routes>
           </div>

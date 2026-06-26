@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './navbar.css';
 
 /**
@@ -9,20 +9,15 @@ import './navbar.css';
  * Displays primary actions like Login and Register.
  */
 function LoggedOutNavbar() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    // --- Navigation Handlers ---
-    const handleDashboardClick = () => {
-        navigate('/');
-    }
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
 
-    const handleLoginClick = () => {
-        navigate('/login');
-    }
-
-    const handleRegisterClick = () => {
-        navigate('/register');
-    }
+  const handleRegisterClick = () => {
+    navigate('/register');
+  };
 
   return (
     <nav className="navbar">

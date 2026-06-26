@@ -2,6 +2,11 @@ const nodemailer = require('nodemailer');
 
 const getBooleanEnv = (value) => value === 'true' || value === '1';
 
+/**
+ * Creates an SMTP transport when mail settings are configured. In local
+ * development, jsonTransport keeps password-reset flows testable without
+ * requiring external email credentials.
+ */
 const createTransport = () => {
   if (!process.env.SMTP_HOST) {
     return nodemailer.createTransport({

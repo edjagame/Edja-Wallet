@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './navbar.css';
 
@@ -13,33 +13,31 @@ function LoggedInNavbar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Logs the user out by clearing local storage and updating context
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     logout();
     navigate('/login');
   };
 
-  // --- Navigation Handlers ---
   const handleDashboardClick = () => {
     navigate('/');
-  }
+  };
 
   const handleTransactionsClick = () => {
     navigate('/transactions');
-  }
+  };
 
   const handleCategoriesClick = () => {
     navigate('/categories');
-  }
+  };
 
   const handleBudgetsClick = () => {
     navigate('/budgets');
-  }
+  };
 
   const handleSettingsClick = () => {
     navigate('/settings');
-  }
+  };
 
   return (
     <nav className="navbar">
@@ -53,7 +51,6 @@ function LoggedInNavbar() {
         <li><button onClick={handleBudgetsClick} className="nav-button">Budgets</button></li>
         <li><button onClick={handleCategoriesClick} className="nav-button">Categories</button></li>
         <li><button onClick={handleSettingsClick} className="nav-button">Settings</button></li>
-        {/* Personalized greeting using user state */}
         <li><span className="user-greeting">Hello, {user.name}!</span></li>
         <li><button onClick={handleLogout} className="nav-button-logout">Logout</button></li>
       </ul>

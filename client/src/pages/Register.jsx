@@ -3,12 +3,12 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 import {
-    EMAIL_MESSAGE,
-    PASSWORD_MESSAGE,
-    normalizeName,
-    normalizeEmail,
-    isValidEmail,
-    isStrongPassword
+  EMAIL_MESSAGE,
+  PASSWORD_MESSAGE,
+  normalizeName,
+  normalizeEmail,
+  isValidEmail,
+  isStrongPassword
 } from '../utils/authValidation';
 
 /**
@@ -18,107 +18,90 @@ import {
  * Automatically logs in and redirects the user on successful registration.
  */
 function Register() {
-    // --- State Management ---
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
-    const { user, login } = useContext(AuthContext);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { user, login } = useContext(AuthContext);
 
-    // Auth Guard: Redirect authenticated users to dashboard
-    if (user) {
-        return <Navigate to="/" />;
+  if (user) {
+    return <Navigate to="/" />;
+  }
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    const normalizedName = normalizeName(name);
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedName || !normalizedEmail || !password) {
+      setError('Name, email, and password are required');
+      return;
     }
 
-    // --- Event Handlers ---
-    // Submits new account details to the server
-    const handleRegister = async (e) => {
-        e.preventDefault();
-        const normalizedName = normalizeName(name);
-        const normalizedEmail = normalizeEmail(email);
+    if (!isValidEmail(normalizedEmail)) {
+      setError(EMAIL_MESSAGE);
+      return;
+    }
 
-        if (!normalizedName || !normalizedEmail || !password) {
-            setError("Name, email, and password are required");
-            return;
-        }
-        if (!isValidEmail(normalizedEmail)) {
-            setError(EMAIL_MESSAGE);
-            return;
-        }
-        if (!isStrongPassword(password)) {
-            setError(PASSWORD_MESSAGE);
-            return;
-        }
-        
-        try {
-            // Create user account
-            const response = await axios.post('/auth/register', { name: normalizedName, email: normalizedEmail, password });
-            
-            // Extract session data
-            const { token, user } = response.data;
-            
-            // Persist token
-            localStorage.setItem('authToken', token);
-            
-            // Update AuthContext
-            login(user);
-            
-            // Redirect to home page
-            navigate('/');
-        } catch (err) {
-            console.error("Registration failed (catch block entered).", err);
-            if (err.response) {
-                console.error("Server responded with error status:", err.response.status);
-                console.error("Error response data:", err.response.data);
-            } else if (err.request) {
-                console.error("No response received from server. Request object:", err.request);
-            } else {
-                console.error("Error setting up request:", err.message);
-            }
+    if (!isStrongPassword(password)) {
+      setError(PASSWORD_MESSAGE);
+      return;
+    }
 
-            // Handle registration-specific errors from server
-            if (err.response && err.response.data && err.response.data.message) {
-                setError(err.response.data.message);
-            } else {
-                setError("Something went wrong. Please try again.");
-            }
-        }
-    };
+    try {
+      const response = await axios.post('/auth/register', {
+        name: normalizedName,
+        email: normalizedEmail,
+        password
+      });
+      const { token, user } = response.data;
 
-    // --- Rendering ---
-    return (
-        <div>
-            <h1>Register</h1>
-            {/* Validation/API error feedback */}
-            {error && <p className="text-danger">{error}</p>}
-            
-            <form onSubmit={handleRegister} noValidate>
-                <input 
-                  type="text" 
-                  value={name} 
-                  onChange={e => setName(e.target.value)} 
-                  placeholder="Name" 
-                  required 
-                />
-                <input 
-                  type="email" 
-                  value={email} 
-                  onChange={e => setEmail(e.target.value)} 
-                  placeholder="Email" 
-                  required 
-                />
-                <input 
-                  type="password" 
-                  value={password} 
-                  onChange={e => setPassword(e.target.value)} 
-                  placeholder="Password" 
-                  required 
-                />
-                <button type="submit">Register</button>
-            </form>
-        </div>
-    );
+      localStorage.setItem('authToken', token);
+      login(user);
+      navigate('/');
+    } catch (err) {
+      console.error('Registration failed:', err);
+
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+    }
+  };
+
+  return (
+    <div>
+      <h1>Register</h1>
+      {error && <p className="text-danger">{error}</p>}
+
+      <form onSubmit={handleRegister} noValidate>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
+          required
+        />
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          required
+        />
+        <button type="submit">Register</button>
+      </form>
+    </div>
+  );
 }
 
 export default Register;

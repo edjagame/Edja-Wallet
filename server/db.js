@@ -1,6 +1,7 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
+// Shared PostgreSQL connection pool used by all route modules.
 const pool = new Pool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,

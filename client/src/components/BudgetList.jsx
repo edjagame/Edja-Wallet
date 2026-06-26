@@ -1,19 +1,15 @@
 import React from 'react';
 
 /**
- * BudgetList Component
- * 
- * Displays a list of budget in a grid.
- * Allows selecting a budget by clicking on it.
+ * Displays selectable budget rows for the current filter.
  */
 function BudgetList({ budgets, selectedBudgetId, onSelectBudget }) {
-  // --- Rendering ---
   return (
     <div className="grid-col-1 gap-10">
       {budgets.length > 0 ? (
-        budgets.map(budget => (
-          <div 
-            key={budget.id} 
+        budgets.map((budget) => (
+          <div
+            key={budget.id}
             onClick={() => onSelectBudget(budget.id === selectedBudgetId ? null : budget.id)}
             className={`budget-item ${budget.id === selectedBudgetId ? 'selected' : ''}`}
           >
