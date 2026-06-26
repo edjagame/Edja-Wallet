@@ -6,6 +6,14 @@ const pool = require('../db');
 const crypto = require('crypto');
 const authMiddleware = require('../middleware/authMiddleware');
 const { sendPasswordResetEmail } = require('../utils/mailer');
+const {
+    EMAIL_MESSAGE,
+    PASSWORD_MESSAGE,
+    normalizeName,
+    normalizeEmail,
+    isValidEmail,
+    isStrongPassword
+} = require('../utils/authValidation');
 
 const hashResetToken = (token) => {
     return crypto.createHash('sha256').update(token).digest('hex');
@@ -21,14 +29,22 @@ router.post('/register', async (req, res) => {
   try {
 
     const { name, email, password } = req.body;
+    const normalizedName = normalizeName(name);
+    const normalizedEmail = normalizeEmail(email);
 
     // Basic validation
-    if (!name || !email || !password) {
+    if (!normalizedName || !normalizedEmail || !password) {
         return res.status(400).json({ message: "Name, email, and password are required" });
+    }
+    if (!isValidEmail(normalizedEmail)) {
+        return res.status(400).json({ message: EMAIL_MESSAGE });
+    }
+    if (!isStrongPassword(password)) {
+        return res.status(400).json({ message: PASSWORD_MESSAGE });
     }
 
     // Check if user already exists
-    const userExists = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    const userExists = await pool.query("SELECT * FROM users WHERE LOWER(email) = $1", [normalizedEmail]);
     if (userExists.rows.length > 0) {
         return res.status(400).json({ message: "User already exists" });
     }
@@ -39,7 +55,7 @@ router.post('/register', async (req, res) => {
 
     const newUser = await pool.query(
         "INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING *",
-        [name, email, bcryptPassword]
+        [normalizedName, normalizedEmail, bcryptPassword]
     );
 
     const userId = newUser.rows[0].id;
@@ -85,11 +101,12 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        if (!email || !password) {
+        const normalizedEmail = normalizeEmail(email);
+        if (!normalizedEmail || !password) {
         return res.status(400).json({ message: "Email and password are required" });
         }
 
-        const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+        const user = await pool.query("SELECT * FROM users WHERE LOWER(email) = $1", [normalizedEmail]);
         if (user.rows.length === 0) {
         return res.status(401).json({ message: "Password or email is incorrect" });
         }
@@ -119,11 +136,12 @@ router.post('/login', async (req, res) => {
 router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
-        if (!email) {
+        const normalizedEmail = normalizeEmail(email);
+        if (!normalizedEmail) {
             return res.status(400).json({ message: "Email is required" });
         }
 
-        const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+        const user = await pool.query("SELECT * FROM users WHERE LOWER(email) = $1", [normalizedEmail]);
         
         // Return generic success message immediately to prevent timing attacks / email enumeration
         res.json({ message: "If an account with that email exists, a password reset link has been sent." });
@@ -155,6 +173,9 @@ router.post('/reset-password', async (req, res) => {
         const { token, newPassword } = req.body;
         if (!token || !newPassword) {
             return res.status(400).json({ message: "Token and new password are required" });
+        }
+        if (!isStrongPassword(newPassword)) {
+            return res.status(400).json({ message: PASSWORD_MESSAGE });
         }
 
         const resetTokenHash = hashResetToken(token);
@@ -189,6 +210,9 @@ router.post('/change-password', authMiddleware, async (req, res) => {
         const { oldPassword, newPassword } = req.body;
         if (!oldPassword || !newPassword) {
             return res.status(400).json({ message: "Old and new passwords are required" });
+        }
+        if (!isStrongPassword(newPassword)) {
+            return res.status(400).json({ message: PASSWORD_MESSAGE });
         }
 
         const user = await pool.query("SELECT * FROM users WHERE id = $1", [req.user.id]);

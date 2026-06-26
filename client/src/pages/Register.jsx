@@ -2,6 +2,14 @@ import React, { useState, useContext } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
+import {
+    EMAIL_MESSAGE,
+    PASSWORD_MESSAGE,
+    normalizeName,
+    normalizeEmail,
+    isValidEmail,
+    isStrongPassword
+} from '../utils/authValidation';
 
 /**
  * Register Page
@@ -27,29 +35,36 @@ function Register() {
     // Submits new account details to the server
     const handleRegister = async (e) => {
         e.preventDefault();
-        console.log("Register button clicked. Attempting registration...");
-        console.log("Payload:", { name, email, password: password ? "***" : "missing" });
+        const normalizedName = normalizeName(name);
+        const normalizedEmail = normalizeEmail(email);
+
+        if (!normalizedName || !normalizedEmail || !password) {
+            setError("Name, email, and password are required");
+            return;
+        }
+        if (!isValidEmail(normalizedEmail)) {
+            setError(EMAIL_MESSAGE);
+            return;
+        }
+        if (!isStrongPassword(password)) {
+            setError(PASSWORD_MESSAGE);
+            return;
+        }
         
         try {
-            console.log("Sending POST request to /auth/register...");
             // Create user account
-            const response = await axios.post('/auth/register', { name, email, password });
-            console.log("Server responded with success:", response.data);
+            const response = await axios.post('/auth/register', { name: normalizedName, email: normalizedEmail, password });
             
             // Extract session data
             const { token, user } = response.data;
-            console.log("Extracted token and user from response", { hasToken: !!token, user });
             
             // Persist token
             localStorage.setItem('authToken', token);
-            console.log("Token stored in localStorage.");
             
             // Update AuthContext
             login(user);
-            console.log("AuthContext login updated with user.");
             
             // Redirect to home page
-            console.log("Redirecting to /");
             navigate('/');
         } catch (err) {
             console.error("Registration failed (catch block entered).", err);
@@ -78,7 +93,7 @@ function Register() {
             {/* Validation/API error feedback */}
             {error && <p className="text-danger">{error}</p>}
             
-            <form onSubmit={handleRegister}>
+            <form onSubmit={handleRegister} noValidate>
                 <input 
                   type="text" 
                   value={name} 

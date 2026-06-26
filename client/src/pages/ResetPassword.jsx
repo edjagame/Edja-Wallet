@@ -1,7 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
 import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
+import { PASSWORD_MESSAGE, isStrongPassword } from '../utils/authValidation';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -29,6 +30,10 @@ function ResetPassword() {
 
         if (newPassword !== confirmPassword) {
             setError('Passwords do not match');
+            return;
+        }
+        if (!isStrongPassword(newPassword)) {
+            setError(PASSWORD_MESSAGE);
             return;
         }
 

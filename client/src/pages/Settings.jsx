@@ -3,6 +3,7 @@ import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import { Navigate } from 'react-router-dom';
+import { PASSWORD_MESSAGE, isStrongPassword } from '../utils/authValidation';
 
 /**
  * Settings Page
@@ -42,6 +43,10 @@ function Settings() {
 
         if (newPassword !== confirmPassword) {
             setError("New passwords do not match.");
+            return;
+        }
+        if (!isStrongPassword(newPassword)) {
+            setError(PASSWORD_MESSAGE);
             return;
         }
 
