@@ -48,5 +48,6 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/categories', require('./routes/categories'));
 app.use('/api/budgets', require('./routes/budgets'));
+app.use('/api/reports', require('./routes/reports'));
 
 app.listen(5000, () => console.log('Server running on port 5000'));
